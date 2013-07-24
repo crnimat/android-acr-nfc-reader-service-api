@@ -86,7 +86,7 @@ public class MainActivity extends Activity {
 
             	Log.d(TAG, "ACS NFC Reader opened");
                 
-            	setServiceStarted(true);
+            	setReaderOpen(true);
             } else if (Broadcast.ACTION_NFC_READER_CLOSED.equals(action)) {
 
             	Log.d(TAG, "ACS NFC Reader closed");
