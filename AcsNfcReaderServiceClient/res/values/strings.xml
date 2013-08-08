@@ -26,6 +26,11 @@
     <string name="tagTypeDesfire">Desfire</string>
     <string name="tagTypeOther">Other</string>
     
+    <string name="tagId">Tag id</string>
+    <string name="tagIdNone">-</string>
+    <string name="tagIdUnknown">Unknown</string>
+    
+    
     <string name="tagNdefRecords">NDEF Records:</string>
     
     <string name="androidApplication">Android Application</string>

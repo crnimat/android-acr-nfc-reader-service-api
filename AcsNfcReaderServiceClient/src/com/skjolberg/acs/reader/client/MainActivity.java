@@ -71,6 +71,7 @@ public class MainActivity extends Activity {
         	setReaderOpen(false);
         	setTagPresent(false);
         	clearTagType();
+        	clearTagId();
         	hideRecords();
 
         }
@@ -98,6 +99,7 @@ public class MainActivity extends Activity {
             
         	setTagPresent(false);
 			clearTagType();
+			clearTagId();
         	hideRecords();
         }
 
@@ -116,7 +118,7 @@ public class MainActivity extends Activity {
 
             	Log.d(TAG, "Tag discovered");
 
-            	setTagType(intent);
+            	setTagInfo(intent);
             	
             	setTagPresent(true);
 
@@ -126,7 +128,7 @@ public class MainActivity extends Activity {
 
             	setTagPresent(true);
 
-            	setTagType(intent);
+            	setTagInfo(intent);
 
             	hideRecords();
             } else if (Broadcast.ACTION_NFC_NDEF_DISCOVERED.equals(action)) {
@@ -165,7 +167,7 @@ public class MainActivity extends Activity {
         		}
 
             	setTagPresent(true);
-            	setTagType(intent);
+            	setTagInfo(intent);
 
         		// show in gui
         		showRecords(message);
@@ -177,7 +179,7 @@ public class MainActivity extends Activity {
             	setTagPresent(false);
             	
 				clearTagType();
-
+				clearTagId();
             	hideRecords();
             }
         }
@@ -247,7 +249,15 @@ public class MainActivity extends Activity {
 		setTagType(getString(R.string.tagTypeNone));			
 	}
 
-	private void setTagType(Intent intent) {
+	public void setTagId(final String type) {
+		setTextViewText(R.id.tagId, type);
+	}
+
+	private void clearTagId() {
+		setTagId(getString(R.string.tagIdNone));			
+	}
+
+	private void setTagInfo(Intent intent) {
 		if(intent.hasExtra(Broadcast.EXTRA_TAG)) {
 			Tag tag = intent.getParcelableExtra(Broadcast.EXTRA_TAG);
 			
@@ -257,10 +267,32 @@ public class MainActivity extends Activity {
 					setTagType(tech.substring(tech.lastIndexOf('.') + 1));
 				}
 			}
+			
+			byte[] id = tag.getId();
+			if(id != null) {
+				setTagId(toHexString(id).toUpperCase());
+			} else {
+				setTagId(getString(R.string.tagIdUnknown));
+			}
 		} else {
 			setTagType(getString(R.string.tagTypeOther));
+			setTagId(getString(R.string.tagIdUnknown));
 		}
 	}
+	
+    /**
+     * Converts the byte array to HEX string.
+     * 
+     * @param buffer
+     *            the buffer.
+     * @return the HEX string.
+     */
+    public static String toHexString(byte[] buffer) {
+		StringBuilder sb = new StringBuilder();
+		for(byte b: buffer)
+			sb.append(String.format("%02x ", b&0xff));
+		return sb.toString();
+    }
 	
 	public void setTextViewText(final int resource, final int string) {
 		setTextViewText(resource, getString(string));

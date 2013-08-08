@@ -90,6 +90,26 @@
                 android:textSize="20sp"
                  />
         </TableRow>
+        
+        <TableRow>
+
+            <TextView
+                android:layout_column="1"
+                android:padding="3dip"
+                android:text="@string/tagId"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                 />
+
+            <TextView
+                android:id="@+id/tagId"
+                android:gravity="right"
+                android:padding="3dip"
+                android:text="@string/tagIdNone"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                 />
+        </TableRow>
     </TableLayout>
     
     <TextView
