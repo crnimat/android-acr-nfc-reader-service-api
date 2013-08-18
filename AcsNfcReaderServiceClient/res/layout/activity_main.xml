@@ -119,15 +119,43 @@
         android:padding="3dip"
         android:text="@string/tagNdefRecords"
         android:textColor="@color/black"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:visibility="gone"
+         />
     
 	<ListView
         android:id="@+id/recordListView"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:background="@drawable/button"
         android:cacheColorHint="@android:color/transparent"
         android:orientation="horizontal"
         android:visibility="gone" />
 
+	<TextView 
+	    android:text="@string/readNdefMessgeFeature" 
+	    android:id="@+id/readStatus"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+	/>
+	
+	<Button
+        android:id="@+id/writeButton"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:onClick="writeNdefMessage"
+        android:text="@string/writeNdefMessage"
+        android:visibility="gone" />
+		
+    <TextView
+        android:id="@+id/writeStatus"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="3dip"
+        android:textColor="@color/black"
+        android:text="@string/writeNdefMessageFeature"
+        android:visibility="gone" />
+		
 </LinearLayout>

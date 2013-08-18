@@ -3,7 +3,14 @@
 
     <string name="app_name">ACS NFC Reader Service Client</string>
     <string name="action_settings">Settings</string>
+    <string name="writeNdefMessage">Write NDEF message</string>
+    <string name="writeNdefMessageSuccess">Write NDEF message success</string>
+    <string name="writeNdefMessageFailure">Write NDEF message failure.</string>
+    <string name="writeNdefMessagePreconditionFailure">Write NDEF message precondition failure.</string>
+    <string name="writeNdefMessageFeature">Writing NDEF messages is a premium feature.</string>
 
+    <string name="readNdefMessgeFeature">Reading NDEF messages is a premium feature.</string>
+    
     <string name="serviceStatus">Service status</string>
     <string name="serviceStatusUnknown">Unknown</string>
     <string name="serviceStatusStarted">Started</string>
@@ -30,8 +37,7 @@
     <string name="tagIdNone">-</string>
     <string name="tagIdUnknown">Unknown</string>
     
-    
-    <string name="tagNdefRecords">NDEF Records:</string>
+    <string name="tagNdefRecords">NDEF Message :</string>
     
     <string name="androidApplication">Android Application</string>
     <string name="androidApplicationPackageName">Package name</string>

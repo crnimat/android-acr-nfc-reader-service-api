@@ -19,9 +19,14 @@
 
 package com.skjolberg.acs.reader.client;
 
+import java.nio.charset.Charset;
+import java.util.Date;
+import java.util.Locale;
+
 import org.ndeftools.Message;
 import org.ndeftools.Record;
 import org.ndeftools.UnsupportedRecord;
+import org.ndeftools.wellknown.TextRecord;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -31,6 +36,8 @@ import android.content.IntentFilter;
 import android.nfc.FormatException;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
+import android.nfc.tech.MifareClassic;
+import android.nfc.tech.MifareUltralight;
 import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
 import android.os.Bundle;
@@ -73,7 +80,28 @@ public class MainActivity extends Activity {
         	clearTagType();
         	clearTagId();
         	hideRecords();
+        	hideWriteNdefMessage();
+        }
+    };
+    
+	private final BroadcastReceiver writeNfcTagResultReceiver = new BroadcastReceiver() {
 
+        public void onReceive(Context context, Intent intent) {
+
+        	String action = intent.getAction();
+        	
+            if (Broadcast.ACTION_NFC_TAG_WRITE_RESULT.equals(action)) {
+            	Log.d(TAG, "Write result");
+            	int status = intent.getIntExtra(Broadcast.EXTRA_WRITE_STATUS, -1);
+            	if(status == Broadcast.WRITE_STATUS_SUCCESS) {
+                	setTextViewText(R.id.writeStatus, getString(R.string.writeNdefMessageSuccess));
+            	} else if(status == Broadcast.WRITE_STATUS_FAILURE) {
+                	setTextViewText(R.id.writeStatus, getString(R.string.writeNdefMessageFailure));
+            	} else if(status == Broadcast.WRITE_STATUS_PRECONDITION_FAILURE) {
+                	setTextViewText(R.id.writeStatus, getString(R.string.writeNdefMessagePreconditionFailure));
+                } else throw new IllegalArgumentException("Unexpected status " + status);
+            	
+            } else throw new IllegalArgumentException("Unexpected action " + action);
         }
     };
     
@@ -101,6 +129,7 @@ public class MainActivity extends Activity {
 			clearTagType();
 			clearTagId();
         	hideRecords();
+        	hideWriteNdefMessage();
         }
 
     };
@@ -123,6 +152,10 @@ public class MainActivity extends Activity {
             	setTagPresent(true);
 
             	hideRecords();
+            	
+        		if(canWritable(intent)) {
+        			showWriteNdefMessage();
+        		}
             } else if (Broadcast.ACTION_NFC_TECH_DISCOVERED.equals(action)) {
             	Log.d(TAG, "Tech discovered");
 
@@ -131,6 +164,10 @@ public class MainActivity extends Activity {
             	setTagInfo(intent);
 
             	hideRecords();
+            	
+        		if(canWritable(intent)) {
+        			showWriteNdefMessage();
+        		}
             } else if (Broadcast.ACTION_NFC_NDEF_DISCOVERED.equals(action)) {
             	Log.d(TAG, "NDEF discovered");
             	
@@ -172,6 +209,9 @@ public class MainActivity extends Activity {
         		// show in gui
         		showRecords(message);
 
+        		if(canWritable(intent)) {
+        			showWriteNdefMessage();
+        		}
             } else if (Broadcast.ACTION_NFC_TAG_LEFT_FIELD.equals(action)) {
 
             	Log.d(TAG, "NFC Tag left");
@@ -181,6 +221,8 @@ public class MainActivity extends Activity {
 				clearTagType();
 				clearTagId();
             	hideRecords();
+            	
+            	hideWriteNdefMessage();
             }
         }
 
@@ -208,6 +250,9 @@ public class MainActivity extends Activity {
 		tagFilter.addAction(Broadcast.ACTION_NFC_TAG_LEFT_FIELD);
         registerReceiver(tagStatusReceiver, tagFilter);
 
+		IntentFilter writeFilter = new IntentFilter();
+		writeFilter.addAction(Broadcast.ACTION_NFC_TAG_WRITE_RESULT);
+        registerReceiver(writeNfcTagResultReceiver, writeFilter);
 	}
 
 	@Override
@@ -280,6 +325,24 @@ public class MainActivity extends Activity {
 		}
 	}
 	
+	private boolean canWritable(Intent intent) {
+		if(intent.hasExtra(Broadcast.EXTRA_TAG)) {
+			Tag tag = intent.getParcelableExtra(Broadcast.EXTRA_TAG);
+			
+			if(!tag.isWritable()) {
+				return false;
+			}
+			
+			String[] techList = tag.getTechList();
+			for(String tech : techList) {
+				if(tech.equals(MifareClassic.class.getName()) || tech.equals(MifareUltralight.class.getName())) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
     /**
      * Converts the byte array to HEX string.
      * 
@@ -303,6 +366,7 @@ public class MainActivity extends Activity {
 			public void run() {
 				TextView textView = (TextView) findViewById(resource);
 				textView.setText(string);
+				textView.setVisibility(View.VISIBLE);
 			}
 		});
 	}
@@ -318,14 +382,47 @@ public class MainActivity extends Activity {
 		
 		Log.d(TAG, "Show " + message.size() + " records");
 		
-		ArrayAdapter<? extends Object> adapter = new NdefRecordAdapter(this, message);
 		ListView listView = (ListView) findViewById(R.id.recordListView);
-		listView.setAdapter(adapter);
-		listView.setVisibility(View.VISIBLE);
+		View ndefRecords = findViewById(R.id.ndefRecords);
+		View readStatus = findViewById(R.id.readStatus);
+		if(!message.isEmpty()) {
+			ArrayAdapter<? extends Object> adapter = new NdefRecordAdapter(this, message);
+			listView.setAdapter(adapter);
+			listView.setVisibility(View.VISIBLE);
+			
+			ndefRecords.setVisibility(View.VISIBLE);
+			readStatus.setVisibility(View.GONE);
+		} else {
+			listView.setVisibility(View.GONE);
+			
+			ndefRecords.setVisibility(View.GONE);
+			readStatus.setVisibility(View.VISIBLE);
+		}
 		
-		findViewById(R.id.ndefRecords).setVisibility(View.VISIBLE);
 	}
 
+	public void writeNdefMessage(View view) {
+		Log.d(TAG, "Request write of NDEF Message");
+
+		// write ndef message
+		// this is a premium feature
+		// so it will not work if you have not enabled the feature in the service
+		
+		// compose your message
+		// TODO your code here
+		Message message = new Message();
+
+		TextRecord textRecord = new TextRecord();
+		textRecord.setText("Timestamp: " + new Date());
+		textRecord.setLocale(Locale.US);
+		textRecord.setEncoding(Charset.forName("UTF-8"));
+		
+		message.add(textRecord);
+		
+		Intent intent = new Intent(Broadcast.ACTION_NFC_TAG_WRITE_REQUEST);
+		intent.putExtra(Broadcast.EXTRA_NDEF_MESSAGES, message.getNdefMessage());
+		sendBroadcast(intent); 
+	}
 	
 	/**
 	 * 
@@ -336,14 +433,26 @@ public class MainActivity extends Activity {
 	public void hideRecords() {
 		findViewById(R.id.recordListView).setVisibility(View.GONE);
 		findViewById(R.id.ndefRecords).setVisibility(View.GONE);
+		findViewById(R.id.readStatus).setVisibility(View.GONE);
 	}
-	
+
+	public void hideWriteNdefMessage() {
+		findViewById(R.id.writeButton).setVisibility(View.GONE);
+		findViewById(R.id.writeStatus).setVisibility(View.GONE);
+	}
+
+	public void showWriteNdefMessage() {
+		setTextViewText(R.id.writeStatus, R.string.writeNdefMessageFeature);
+		findViewById(R.id.writeButton).setVisibility(View.VISIBLE);
+	}
+
 	@Override
 	protected void onDestroy() {
 		
 		unregisterReceiver(serviceStatusReceiver);
 		unregisterReceiver(readerStatusReceiver);
 		unregisterReceiver(tagStatusReceiver);
+		unregisterReceiver(writeNfcTagResultReceiver);
 		
 		super.onDestroy();
 	}

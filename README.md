@@ -15,7 +15,7 @@ are supported and must be connected to your Android device via an On-The-Go (OTG
 
 Supported tag technology
 ========================
-Mifare Ultralight tags are supported, since that is the kind of tags I think you should use. 
+Mifare Ultralight and Mifare Classic tags are supported. NTAG203 also work. I recommend Mifare Ultralights or NTAG203. 
 If you need some tags, get some at [RapidNFC](http://rapidnfc.com/r/1372).
 
 API
@@ -29,6 +29,14 @@ Demo client
 ===========
 The demo client keeps track of the service states and displays NDEF messages from tags scanned by the ACR NFC Reader.
 
+Free features
+===========
+Detecting tag presence, type and id are free features.
+
+Premium features
+===========
+Reading and writing NDEF messages are premium features. This app should speed up your prototyping considerably, so consider going premium.
+
 Need help?
 ===========
-If you need professional help with an NFC project, get in touch. 
+If you need professional help with an NFC project, get in touch. A more advanced API is available upon request.

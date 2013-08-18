@@ -44,5 +44,27 @@ public interface Broadcast {
     public static final String EXTRA_ID = "com.acs.integration.extra.ID";
 
 	public static final String ACTION_NFC_TAG_LEFT_FIELD = "com.acs.integration.action.NFC_TAG_LEFT_FIELD";
+
+	/**
+	 * 
+	 * Request write of NDEF content to tag. The NDEF message to write must be set as {@link EXTRA_NDEF_MESSAGES} in the broadcast.
+	 * 
+	 */
 	
+	public static final String ACTION_NFC_TAG_WRITE_REQUEST = "com.acs.integration.action.NFC_TAG_WRITE_REQUEST";
+	
+	/**
+	 * 
+	 * Result from {@link ACTION_NFC_TAG_WRITE_REQUEST}. Contains a {@link EXTRA_WRITE_STATUS} status.  
+	 * 
+	 */
+	
+	public static final String ACTION_NFC_TAG_WRITE_RESULT = "com.acs.integration.action.NFC_TAG_WRITE_RESULT";
+	
+	public static final String EXTRA_WRITE_STATUS = "com.acs.integration.extra.WRITE_STATUS";
+	
+	public static final int WRITE_STATUS_SUCCESS = 0;
+	public static final int WRITE_STATUS_FAILURE = 1;
+	public static final int WRITE_STATUS_PRECONDITION_FAILURE = 2;
+
 }

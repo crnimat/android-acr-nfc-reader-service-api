@@ -111,12 +111,16 @@ public class Tag implements Parcelable {
     final byte[] mId;
     final int[] mTechList;
     final String[] mTechStringList;
-	
-	public Tag(byte[] mId, int[] techList) {
+    final int mSlotNumber;
+	final boolean mWritable;
+    
+	public Tag(byte[] mId, int[] techList, int slotNumber, boolean writable) {
 		this.mId = mId;
 		this.mTechList = techList;
-		
+		this.mSlotNumber = slotNumber;
+		this.mWritable = writable;
 		this.mTechStringList = generateTechStringList(techList);
+		
 	}
 	
     private String[] generateTechStringList(int[] techList) {
@@ -201,6 +205,9 @@ public class Tag implements Parcelable {
         writeBytesWithNull(dest, mId);
         dest.writeInt(mTechList.length);
         dest.writeIntArray(mTechList);
+        
+        dest.writeInt(mSlotNumber);
+        dest.writeInt(mWritable ? 1 : 0);
     }
 
     public static final Parcelable.Creator<Tag> CREATOR = new Parcelable.Creator<Tag>() {
@@ -210,8 +217,11 @@ public class Tag implements Parcelable {
             byte[] id = Tag.readBytesWithNull(in);
             int[] techList = new int[in.readInt()];
             in.readIntArray(techList);
-
-            return new Tag(id, techList);
+            int slotNumber;
+            
+           	slotNumber = in.readInt();
+           	boolean writable = in.readInt() == 1;
+            return new Tag(id, techList, slotNumber, writable);
         }
 
         @Override
@@ -243,4 +253,12 @@ public class Tag implements Parcelable {
         out.writeInt(b.length);
         out.writeByteArray(b);
     }
+    
+    public int getSlotNumber() {
+		return mSlotNumber;
+	}
+    
+    public boolean isWritable() {
+		return mWritable;
+	}
 }
