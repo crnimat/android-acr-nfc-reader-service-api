@@ -35,7 +35,7 @@ Detecting tag presence, type and id are free features.
 
 Premium features
 ===========
-Reading and writing NDEF messages are premium features. This app should speed up your prototyping considerably, so consider going premium.
+Reading and writing NDEF messages are premium features. This API should speed up NFC development considerably, so consider going premium.
 
 Need help?
 ===========
