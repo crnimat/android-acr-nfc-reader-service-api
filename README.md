@@ -37,6 +37,10 @@ Premium features
 ===========
 Reading and writing NDEF messages are premium features. This API should speed up NFC development considerably, so consider going premium.
 
+Troubleshooting
+===========
+Does the ACR reader not light up when connected to your device, even after the service asks for USB permissions? The ACR reader shuts down if there is not enough battery, so try charging your battery more. Please report any issues.
+
 Need help?
 ===========
 If you need professional help with an NFC project, get in touch. A more advanced API is available upon request.
